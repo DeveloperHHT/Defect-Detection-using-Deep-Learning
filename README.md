@@ -4,7 +4,7 @@ I have developed a deep learning algorythm that uses the Tensorflow library to t
 
 -To run this project correctly, first we need to import libraries. "pip" command can be used to instal all of them one by one or use Pycharm to auto install all of them
 
-# IMPORTANT: There are 2 different type of defects on buttons : Dots and Scratches. I will be trying to test my data if oven buttons are defected or not. There was about 200 photos in the folders. I deleted almost all of them because of upload limit. I left a few of them just to show how data should be.
+# IMPORTANT: There are 2 different type of defects on buttons : Dots and Scratches. I will be trying to test my data if oven buttons are defected or not. There was about 200 photos in the folders. I deleted almost all of them because of upload limit. I left a few of them just show how data should be.
 
 ## -All imports:
 
