@@ -33,6 +33,8 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 ## -Main library that I am working on is Tensorflow. But Matplotlib is also necessary for visual content. Also Numpy and Pandas will be necessary for this project.
 
+### How to Use:
+
 ### 1-)After importing libraries Create 2 files named "train" and "test". Then create "def_front" and "ok_front" inside both of them.
 
 ### 2-)It is better to set data(images or photos) 80% train and 20% test. Test images must be different from train images. More images, better model.
