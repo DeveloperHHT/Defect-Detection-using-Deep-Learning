@@ -58,6 +58,12 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 ![Figure_3](https://user-images.githubusercontent.com/73137439/190095265-be39b46a-2d65-4f5c-b06a-97209c107f0b.png)
 
+### As we can see this is not a healthy and stable curve. I am going to explain why we get a graph like this at the end.
+
+### A healthy curve should act like this(Just an example): Decreasing loss and increasing accuracy
+
+![PlotAccuracyDuringTrainingExample_01](https://user-images.githubusercontent.com/73137439/190105785-51e2520a-d7d5-4def-8db6-ca6b31684d8c.png)
+
 ![Figure_4](https://user-images.githubusercontent.com/73137439/190095293-ef530639-3bee-422b-a619-0fd0651443f0.png)
 
 ## This curve is not the type of curve we want. I Just wanted to show this as an example. The reason behind this graph, is my data. I got 92% accuracy and almost 0 val_los when I have tried images with same light conditions(with 120 images). But as you can see, my data includes different light conditions and less image. So if you want to fix your graph, basicly you can try this steps:
