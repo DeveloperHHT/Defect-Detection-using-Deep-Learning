@@ -58,9 +58,9 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 ![Figure_4](https://user-images.githubusercontent.com/73137439/190095293-ef530639-3bee-422b-a619-0fd0651443f0.png)
 
-## This curve is not the curve we want. I Just wanted to show an example. The reason behind this is my data. I got 92% accuracy and almost 0 val_los when I have tried images with same light conditions(with 120 images). But as you can see, my data includes different light conditions and less image. So if you want to fix your graph, basicly you can try this steps:
+## This curve is not the type of curve we want. I Just wanted to show this as an example. The reason behind this graph, is my data. I got 92% accuracy and almost 0 val_los when I have tried images with same light conditions(with 120 images). But as you can see, my data includes different light conditions and less image. So if you want to fix your graph, basicly you can try this steps:
 
 
-### -Try to use better photos(get cleat and unblurred shots) under similar light conditions
+### -Try to use better photos(get clean and unblurred shots) under similar light conditions
 ### -Try to increase number of images 
 ### -Try to increase number of epochs
