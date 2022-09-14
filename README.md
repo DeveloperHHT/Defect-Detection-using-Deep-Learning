@@ -45,7 +45,7 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 ### 5-)After all of this code customization run your code.
 
-### 6-)Program will show show something like this:
+### 6-)Program will show something like this :
 
 ![Figure_1](https://user-images.githubusercontent.com/73137439/190092534-c0ef3dde-52bd-492d-91b0-d7b277829cc6.png)
 ### 7-)You can see your data seperated as defected and okay. After Closing that program will run and create a model. It can take time if you have increased number of epochs.
