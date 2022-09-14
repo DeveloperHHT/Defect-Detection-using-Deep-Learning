@@ -20,7 +20,7 @@ dir_train_def = dir_train+'def_front/'  # Class label: Defective
 dir_train_ok = dir_train+'ok_front/'    # Class label: OK
 
 # Specify directory of test data
-dir_test = 'folder directory/test/'
+dir_test = 'folderdirectory/test/'
 dir_test_def = dir_test+'def_front/'
 dir_test_ok = dir_test+'ok_front/'
 
