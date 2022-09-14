@@ -39,7 +39,7 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 ### 2-)It is better to set data(images or photos) 80% train and 20% test. Test images must be different from train images. More images, better model.
 
-### 3-)Go to the code and change the "folderdirec tory". Must be valid directory of the project folder.
+### 3-)Go to the code and change the "folderdirectory". Must be valid directory of the project folder.
 
 ### 4-)You can also customize epoch count and model name that will be created.
 
