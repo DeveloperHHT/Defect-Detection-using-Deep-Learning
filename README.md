@@ -58,9 +58,9 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 ![Figure_3](https://user-images.githubusercontent.com/73137439/190095265-be39b46a-2d65-4f5c-b06a-97209c107f0b.png)
 
-### As we can see this is not a healthy and stable curve. I am going to explain why we get a graph like this at the end.
+### -As we can see this is not a healthy and stable curve. I am going to explain why we get a graph like this at the end.
 
-### A healthy curve should act like this(Just an example): Decreasing loss and increasing accuracy
+### -A healthy curve should act like this(Just an example): Decreasing loss and increasing accuracy
 
 ![PlotAccuracyDuringTrainingExample_01](https://user-images.githubusercontent.com/73137439/190105785-51e2520a-d7d5-4def-8db6-ca6b31684d8c.png)
 
