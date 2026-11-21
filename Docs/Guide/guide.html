@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Defect Detection: User Guide</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  :root { --ink:#1f2430; --muted:#6b7280; --accent:#5b6ee1; --ok:#2e9e6b; --line:#e3e6ee; --soft:#f5f6fb; }
+  * { box-sizing: border-box; }
+  body { font: 11pt/1.55 -apple-system, "Helvetica Neue", Arial, sans-serif; color: var(--ink); margin: 0; }
+  h1 { font-size: 22pt; margin: 0 0 6mm; }
+  h2 { font-size: 15pt; margin: 0 0 4mm; padding-bottom: 2mm; border-bottom: 2px solid var(--accent); }
+  p { margin: 0 0 3.5mm; }
+  section { break-before: page; }
+  .cover { height: 255mm; display: flex; flex-direction: column; justify-content: center; padding: 0 6mm;
+           background: linear-gradient(160deg, #eef0ff 0%, #ffffff 55%); border-radius: 6mm; break-after: page; }
+  .cover .tag { color: var(--accent); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; font-size: 10pt; }
+  .cover h1 { font-size: 34pt; line-height: 1.1; margin: 4mm 0 5mm; }
+  .cover p { color: var(--muted); font-size: 13pt; max-width: 120mm; }
+  .cover img { margin-top: 10mm; width: 100%; border-radius: 3mm; box-shadow: 0 4px 18px rgba(31,36,48,.18); }
+  .toc ol { padding-left: 6mm; font-size: 12pt; line-height: 2; }
+  .toc a { color: var(--ink); text-decoration: none; }
+  .step { display: flex; gap: 4mm; margin: 0 0 4mm; align-items: flex-start; }
+  .step .n { flex: none; width: 8mm; height: 8mm; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700;
+             text-align: center; line-height: 8mm; font-size: 10.5pt; }
+  .step div { flex: 1; }
+  pre { background: #1f2430; color: #e8eaf2; padding: 3.5mm 4mm; border-radius: 2.5mm; font: 9.5pt/1.5 Menlo, monospace; overflow: hidden; white-space: pre-wrap; }
+  code { font: 9.5pt Menlo, monospace; background: var(--soft); padding: .3mm 1.2mm; border-radius: 1mm; }
+  img.shot { max-width: 100%; border: 1px solid var(--line); border-radius: 2.5mm; box-shadow: 0 2px 10px rgba(31,36,48,.12); }
+  .row { display: flex; gap: 6mm; align-items: flex-start; }
+  .row > * { flex: 1; }
+  .note { background: var(--soft); border-left: 3px solid var(--accent); padding: 3mm 4mm; border-radius: 0 2mm 2mm 0; margin: 4mm 0; font-size: 10.5pt; }
+  table { border-collapse: collapse; width: 100%; margin: 3mm 0 5mm; font-size: 10.5pt; }
+  th, td { text-align: left; padding: 2mm 3mm; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 9.5pt; text-transform: uppercase; letter-spacing: .05em; }
+  figcaption { color: var(--muted); font-size: 9.5pt; margin-top: 1.5mm; }
+  figure { margin: 0 0 4mm; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="tag">User guide</div>
+  <h1>Defect Detection using Deep Learning</h1>
+  <p>Train a small neural network on photos of good and bad parts, then let it check new photos.</p>
+  <img src="../Images/predictions.png" alt="Predictions on test photos">
+</div>
+
+<section class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#setup">Set up</a></li>
+    <li><a href="#photos">Prepare your photos</a></li>
+    <li><a href="#train">Train and read the results</a></li>
+    <li><a href="#predict">Check new photos</a></li>
+    <li><a href="#better">Getting better results</a></li>
+    <li><a href="#trouble">When something goes wrong</a></li>
+  </ol>
+</section>
+
+<section id="setup">
+  <h2>1. Set up</h2>
+  <p>You need Python 3.9 or newer and a terminal opened in the project folder. Packages are installed into a virtual environment inside the project.</p>
+  <div class="step"><span class="n">1</span><div>Create the environment:<pre>python3 -m venv .venv</pre></div></div>
+  <div class="step"><span class="n">2</span><div>Install the packages:<pre>.venv/bin/pip install -r requirements.txt</pre></div></div>
+  <div class="note">TensorFlow is a large download. The repository comes with 14 sample photos, so you can try every command before you add your own.</div>
+</section>
+
+<section id="photos">
+  <h2>2. Prepare your photos</h2>
+  <p>Create this folder layout, either inside <code>Data/</code> or anywhere else (then use <code>--data</code>):</p>
+  <pre>Data/
+  train/
+    ok_front/     good parts
+    def_front/    parts with a dot or a scratch
+  test/
+    ok_front/
+    def_front/</pre>
+  <table>
+    <tr><th>Rule</th><th>Why</th></tr>
+    <tr><td>Same camera, distance and light for all photos</td><td>This matters more than the number of photos.</td></tr>
+    <tr><td>At least about 100 photos per class</td><td>The 14 sample photos only show the layout.</td></tr>
+    <tr><td>Test photos are different shots from the training photos</td><td>Otherwise the test result is too good to be true.</td></tr>
+    <tr><td>Roughly as many good as bad photos</td><td>The rarer class is weighted higher, but real examples are better.</td></tr>
+  </table>
+  <figure><img class="shot" src="../Images/samples.png"><figcaption>Training photos of the sample set, one row per class.</figcaption></figure>
+</section>
+
+<section id="train">
+  <h2>3. Train and read the results</h2>
+  <pre>.venv/bin/python main.py train</pre>
+  <p>The program checks the folders first and tells you what is missing. Then it trains, keeps the best epoch, prints the scores on the test photos and writes six figures to <code>Docs/Images</code>.</p>
+  <div class="row">
+    <figure><img class="shot" src="../Images/learning_curve.png"><figcaption>Learning curve: the validation line should go down and then stay low.</figcaption></figure>
+  </div>
+  <div class="row">
+    <figure><img class="shot" src="../Images/confusion_matrix.png" style="max-width:80mm"><figcaption>Rows: the real class. Columns: what the model said. The diagonal is right.</figcaption></figure>
+    <figure><img class="shot" src="../Images/distribution.png"><figcaption>How many photos each class has.</figcaption></figure>
+  </div>
+  <table>
+    <tr><th>Score</th><th>Question it answers</th></tr>
+    <tr><td>Accuracy</td><td>How many of all test photos were right?</td></tr>
+    <tr><td>Precision</td><td>Of the photos called defective, how many really were?</td></tr>
+    <tr><td>Recall</td><td>Of the defective photos, how many were found?</td></tr>
+    <tr><td>F1</td><td>One number that balances precision and recall.</td></tr>
+  </table>
+  <div class="note">On the 14 sample photos the model calls everything defective, so the numbers are poor. With two good photos to learn from it cannot do better. This is expected.</div>
+</section>
+
+<section id="predict">
+  <h2>4. Check new photos</h2>
+  <pre>.venv/bin/python main.py predict photo.jpg
+.venv/bin/python main.py predict folder_with_photos</pre>
+  <p>Each photo gets a label and the confidence of the model (example output with made-up file names):</p>
+  <pre>part_001.jpg  OK         93.4%
+part_002.jpg  Defective  87.1%</pre>
+  <p>With <code>--threshold 0.7</code> a photo only counts as defective when the model is at least 70 % sure. Lower it to catch more defects at the price of more false alarms.</p>
+  <figure><img class="shot" src="../Images/misclassified.png"><figcaption>After training, this picture lists the test photos that were wrong.</figcaption></figure>
+</section>
+
+<section id="better">
+  <h2>5. Getting better results</h2>
+  <div class="step"><span class="n">1</span><div>Take clean, sharp photos under the same light. Reflections on brushed metal change a lot between shots.</div></div>
+  <div class="step"><span class="n">2</span><div>Add more photos, especially of the class with fewer.</div></div>
+  <div class="step"><span class="n">3</span><div>Train longer with <code>--epochs 100</code>. Training stops early when the validation loss stops improving, so extra epochs are cheap.</div></div>
+  <div class="step"><span class="n">4</span><div>Look at <code>misclassified.png</code> after every run. It usually shows what the model is confused by: a shadow, a reflection, a different angle.</div></div>
+</section>
+
+<section id="trouble">
+  <h2>6. When something goes wrong</h2>
+  <table>
+    <tr><th>Message</th><th>What to do</th></tr>
+    <tr><td><code>Missing folder: ...</code></td><td>Create the folder named in the message and put photos in it.</td></tr>
+    <tr><td><code>Need at least two training photos in each class</code></td><td>Add photos. One photo per class cannot be split into training and validation.</td></tr>
+    <tr><td><code>No trained model at ...</code></td><td>Run <code>main.py train</code> first.</td></tr>
+    <tr><td><code>No such file or folder: ...</code></td><td>Check the path you gave to <code>predict</code>.</td></tr>
+  </table>
+</section>
+
+</body>
+</html>

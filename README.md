@@ -1,74 +1,96 @@
-# Defect-Detection-using-Deep-Learning
-I have developed a deep learning algorythm that uses the Tensorflow library to train the data and create a CNN model. By using this trained model, the program will be able to accurately detect defective products and provide the necessary visual representation. Also basic structure that I use can be applied to almost on anything
+# Defect Detection using Deep Learning
 
+A small convolutional network that looks at a photo of a round brushed-metal button and says whether it is **OK** or **defective** (a dot or a scratch on the surface). The same structure works for any "good part / bad part" photo problem: put your own photos in two folders and train.
 
--To run this project correctly, first we need to import libraries. "pip" command can be used to instal all of them one by one or use Pycharm to auto install all of them
+![Predictions on test photos](Docs/Images/predictions.png)
 
-# IMPORTANT: There are 2 different type of defects on buttons : Dots and Scratches. I will be trying to test my data if oven buttons are defected or not. There was about 200 photos in the folders. I deleted almost all of them because of upload limit. I left a few of them just to show how data should be.
+## Read this first: the sample data is tiny
 
-## -All imports:
+The repository contains **14 photos** (8 for training, 6 for testing), just enough to show the folder layout and to let the tests and the commands run. The original set had about 200 photos; most were removed to keep the repository small.
 
-import os
+With 2 good photos to learn from, the network cannot learn what "good" looks like. It calls everything defective, which is what the figures above show (4 of 6 test photos right, and both OK photos wrong). That is expected with this little data, not a bug. Do not read the numbers from the sample data as the accuracy of the method.
 
-import pandas as pd
+On the original data, with photos taken under the same light (about 120 of them), the first version of this project reached roughly 92 % accuracy. Those photos are no longer in the repository, so that figure cannot be reproduced from here. To get meaningful results, train on your own photos: see [Docs/Dataset.md](Docs/Dataset.md).
 
-import numpy as np
+## What the figures show
 
-import seaborn as sns
+| Class distribution | Learning curve |
+|---|---|
+| ![Class distribution](Docs/Images/distribution.png) | ![Learning curve](Docs/Images/learning_curve.png) |
 
-import matplotlib.pyplot as plt
+| Confusion matrix | Training photos |
+|---|---|
+| ![Confusion matrix](Docs/Images/confusion_matrix.png) | ![Training photos](Docs/Images/samples.png) |
 
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+All figures in [Docs/Images](Docs/Images) are written by `python main.py train`, including [the photos the model got wrong](Docs/Images/misclassified.png). When the model makes no mistakes that picture says so.
 
-from tensorflow.keras.models import Sequential, load_model
+## Setup
 
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+Python 3.9 or newer. Packages go into a virtual environment inside the project, nothing global.
 
-from tensorflow.keras.callbacks import ModelCheckpoint
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+```
 
-from tensorflow.keras.optimizers import Adam
+## Usage
 
-from sklearn.metrics import confusion_matrix, classification_report
+```bash
+.venv/bin/python main.py train                  # train, evaluate, write the figures
+.venv/bin/python main.py evaluate               # score the saved model on the test photos
+.venv/bin/python main.py predict photo.jpg      # one or more photos, or whole folders
+```
 
+Useful options: `--data path/to/folder` (folder that contains `train/` and `test/`), `--epochs 100`, `--threshold 0.7` (how sure the model has to be before it says "defective"), `--no-figures`, `--show` (also open the figures in windows). `--help` lists everything.
 
-## -Main library that I am working on is Tensorflow. But Matplotlib is also necessary for visual content. Also Numpy and Pandas will be necessary for this project.
+Example output of `predict`:
 
-### How to Use:
+```
+WhatsApp Image 2022-09-01 at 11.54.06.jpeg  Defective  56.6%
+```
 
-### 1-)After importing libraries Create 2 files named "train" and "test". Then create "def_front" and "ok_front" inside both of them.
+The percentage is how sure the model is about the label it gave. The model is saved as `Models/casting_cnn.keras` (not part of the repository, `train` creates it). A step by step guide with pictures: [Docs/User-Guide.pdf](Docs/User-Guide.pdf).
 
-### 2-)It is better to set data(images or photos) 80% train and 20% test. Test images must be different from train images. More images, better model.
+## How it works
 
-### 3-)Go to the code and change the "folderdirectory". Must be valid directory of the project folder.
+- Photos are read as grayscale 300 x 300 images. A quarter of the training photos is held back for validation.
+- The model rescales the pixels, randomly flips and rotates them a little while training (so a few photos go further), then has two convolution blocks, dropout and a dense layer with one sigmoid output: the probability of "defective".
+- When one class has fewer photos than the other, it gets a higher weight in the loss.
+- Training keeps the epoch with the lowest validation loss and stops early when it stops improving.
+- Accuracy, precision, recall, F1 and the confusion matrix are computed from the test photos in plain numpy ([DefectDetection/evaluation.py](DefectDetection/evaluation.py)), so they are easy to check.
 
-### 4-)You can also customize epoch count and model name that will be created.
+## Project layout
 
-### 5-)After all of this code customization run your code.
+```
+main.py                  entry point
+DefectDetection/
+  config.py              paths and settings
+  data.py                loading and checking the photos
+  model.py               the network
+  training.py            training with checkpoint and early stopping
+  evaluation.py          metrics
+  plots.py               figures
+  predictor.py           use a trained model on single photos
+  cli.py                 command line
+Data/                    sample photos (train/ and test/)
+Tests/                   pytest
+Scripts/                 version bump, user guide
+Docs/                    dataset notes, figures, user guide
+```
 
-### 6-)Program will show something like this :
+## Tests
 
-![Figure_1](https://user-images.githubusercontent.com/73137439/190092534-c0ef3dde-52bd-492d-91b0-d7b277829cc6.png)
-### 7-)You can see your data seperated as defected and okay. After Closing that program will run and create a model. It can take time if you have increased number of epochs.
+```bash
+.venv/bin/pip install -r requirements-dev.txt
+.venv/bin/python -m pytest
+```
 
-### 8-)After running all the epochs a ".hdf5" file will be created in the project directory. That file is our trained CNN model
+They run the complete pipeline on the sample photos with a small image size: loading, training, saving, evaluation, prediction and all figures, plus the version bump. Training quality is not tested, because the sample data is too small to say anything about it.
 
-### 9-)When the program executes all the instructions it will give some graphs as output like learning curve, distribution. For example:
+## History
 
-![Figure_2](https://user-images.githubusercontent.com/73137439/190095216-d7e6126c-d0d9-4c57-8cb3-e7928c24736d.png)
+The first version was one script with hard-coded folder paths. The old commits are kept. The code was rewritten as a package: folders are checked with clear error messages, the old reshape that crashed on small test sets is gone, the model is saved in the current `.keras` format, the "misclassified" figure no longer fails when there are no mistakes, and the sample photos moved from `DefectDetection/` to `Data/`.
 
-![Figure_3](https://user-images.githubusercontent.com/73137439/190095265-be39b46a-2d65-4f5c-b06a-97209c107f0b.png)
+## Version
 
-### -As we can see this is not a healthy and stable curve. I am going to explain why we get a graph like this at the end.
-
-### -A healthy curve should act like this(Just an example): Decreasing loss and increasing accuracy
-
-![PlotAccuracyDuringTrainingExample_01](https://user-images.githubusercontent.com/73137439/190105785-51e2520a-d7d5-4def-8db6-ca6b31684d8c.png)
-
-![Figure_4](https://user-images.githubusercontent.com/73137439/190095293-ef530639-3bee-422b-a619-0fd0651443f0.png)
-
-## This curve is not the type of curve we want. I Just wanted to show this as an example. The reason behind this graph, is my data. I got 92% accuracy and almost 0 val_los when I have tried images with same light conditions(with 120 images). But as you can see, my data includes different light conditions and less image. So if you want to fix your graph, basicly try this steps:
-
-
-### -Use better photos(get clean and unblurred shots) under similar light conditions
-### -Increase number of images 
-### -Increase number of epochs
+The version is in [version.py](version.py) and is raised by a git hook on every commit. In a fresh clone: `git config core.hooksPath .githooks`.
