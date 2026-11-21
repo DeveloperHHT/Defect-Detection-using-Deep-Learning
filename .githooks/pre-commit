@@ -1,0 +1,6 @@
+#!/bin/sh
+# Raises the version on every commit. Enable once with: git config core.hooksPath .githooks
+root="$(git rev-parse --show-toplevel)"
+python="$root/.venv/bin/python"
+[ -x "$python" ] || python=python3
+"$python" "$root/Scripts/bump_version.py" >/dev/null && git add "$root/version.py"

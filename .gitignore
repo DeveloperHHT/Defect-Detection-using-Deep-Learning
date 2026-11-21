@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+# trained weights are rebuilt with `python main.py train`
+Models/*.keras
+!Models/.gitkeep
+.keras/
